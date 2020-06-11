@@ -11,7 +11,7 @@ import click
 class RShinyServerException(Exception):
     pass
 
-def get_server_conf(command, dirname, port):
+def get_server_conf(command, port):
     return """
 
         run_as {user};
@@ -19,7 +19,7 @@ def get_server_conf(command, dirname, port):
         server {{
             listen {port};
             location / {{
-                site_dir {site_dir};
+                app_dir {site_dir};
                 log_dir {site_dir}/logs;
                 bookmark_state_dir {site_dir}/bookmarks;
                 directory_index on;
@@ -29,7 +29,7 @@ def get_server_conf(command, dirname, port):
     """.format(
         user=getpass.getuser(),
         port=str(port),
-        site_dir=dirname
+        site_dir=command
     )
 
 @click.command()
@@ -46,17 +46,15 @@ def run(port, ip, debug, command):
     # Command can be absolute, or could be relative to cwd
     app_r_path = os.path.join(os.getcwd(), command)
 
-    print("Fetching R script or folder {}".format(app_r_path))
+    print("Fetching R Shiny folder {}".format(app_r_path))
 
-    dirname = os.path.dirname(app_r_path)
+    print("CWD to {}".format(app_r_path))
 
-    print("CWD to {}".format(dirname))
-
-    os.chdir(dirname)
+    os.chdir(app_r_path)
 
     with NamedTemporaryFile(mode='w', delete=False) as conf_file:
 
-        conf_str = get_server_conf(command, dirname, port)
+        conf_str = get_server_conf(app_r_path, port)
 
         conf_file.write(conf_str)
 
