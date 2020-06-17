@@ -48,9 +48,9 @@ def run(port, ip, debug, command):
 
     print("Fetching R Shiny folder {}".format(app_r_path))
 
-    print("CWD to {}".format(app_r_path))
-
-    os.chdir(app_r_path)
+    if os.path.isdir(app_r_path):
+        print("CWD to {}".format(app_r_path))
+        os.chdir(app_r_path)
 
     with NamedTemporaryFile(mode='w', delete=False) as conf_file:
 
