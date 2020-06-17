@@ -15,6 +15,8 @@ def get_server_conf(command, port):
     return """
 
         run_as {user};
+
+        preserve_logs true;
         
         server {{
             listen {port};
